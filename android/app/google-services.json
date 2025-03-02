@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "1050680640775",
-    "project_id": "futurefuturetask",
-    "storage_bucket": "futurefuturetask.firebasestorage.app"
+    "project_number": "701849516005",
+    "project_id": "futurefortunetasks",
+    "storage_bucket": "futurefortunetasks.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:1050680640775:android:3accdb77883c16af3c31a2",
+        "mobilesdk_app_id": "1:701849516005:android:8433a7aaef5cafa128210c",
         "android_client_info": {
           "package_name": "com.example.future_fortune_task"
         }
@@ -15,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyAtKmLQYMCG6uTjYRwLWJTLbyakDy6GmB4"
+          "current_key": "AIzaSyD7IByULRB_Iwu3t5fXsD3xpdbLi7z9rn4"
         }
       ],
       "services": {

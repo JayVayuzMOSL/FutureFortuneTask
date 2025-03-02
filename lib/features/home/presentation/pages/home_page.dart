@@ -51,9 +51,18 @@ class _HomePageState extends State<HomePage> {
                       itemCount: state.items.length,
                       itemBuilder: (context, index) {
                         final item = state.items[index];
-                        return NoteCard(
-                          imageUrl: item["imageUrl"], // Assuming image URL is provided
-                          title: item["title"],
+
+                        return Visibility(
+                          visible: item.isNotEmpty,
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.pushNamed(context, '/editItem');
+                            },
+                            child: NoteCard(
+                              imageUrl: item["imageurl"]?.toString() ?? '', // Safe handling
+                              title: item["title"]?.toString() ?? 'No Title',
+                            ),
+                          ),
                         );
                       },
                     );
@@ -68,7 +77,9 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {}, // Add note functionality
+        onPressed: () {
+          Navigator.pushNamed(context, '/addItem');
+        }, // Add note functionality
         backgroundColor: Colors.blue,
         child: Icon(Icons.add, size: 28.sp, color: Colors.white),
       ),

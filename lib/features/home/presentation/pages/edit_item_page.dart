@@ -8,9 +8,7 @@ class EditTaskPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => EditTaskCubit(),
-      child: Scaffold(
+    return Scaffold(
         appBar: AppBar(
           title: const Text('Edit task', style: TextStyle(fontWeight: FontWeight.bold)),
           actions: [
@@ -49,7 +47,6 @@ class EditTaskPage extends StatelessWidget {
               _buildDeleteButton(context),
             ],
           ),
-        ),
       ),
     );
   }

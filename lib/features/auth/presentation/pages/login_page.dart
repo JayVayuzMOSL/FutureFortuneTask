@@ -5,11 +5,36 @@ import 'package:future_fortune_task/features/auth/presentation/bloc/auth_bloc.da
 import 'package:future_fortune_task/features/auth/presentation/widgets/custom_button.dart';
 import 'package:future_fortune_task/features/auth/presentation/widgets/custom_textform_field.dart';
 import 'package:get_it/get_it.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class LoginPage extends StatelessWidget {
+class LoginPage extends StatefulWidget {
 
+  @override
+  State<LoginPage> createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
   final TextEditingController _emailController = TextEditingController();
+
   final TextEditingController _passwordController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _checkUserLoggedIn();
+  }
+
+  Future<void> _checkUserLoggedIn() async {
+    final prefs = await SharedPreferences.getInstance();
+    final userId = prefs.getString('user_id');
+
+    if (userId != null && userId.isNotEmpty) {
+      // Navigate to Home Page if userId exists
+      Future.microtask(() {
+        Navigator.pushReplacementNamed(context, '/home');
+      });
+    }
+  }
 
   void _login() {
     GetIt.I<AuthCubit>().login(_emailController.text, _passwordController.text);

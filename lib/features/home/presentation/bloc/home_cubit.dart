@@ -1,6 +1,9 @@
+import 'dart:convert';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 part 'home_state.dart';
 
@@ -14,11 +17,41 @@ class HomeCubit extends Cubit<HomeState> {
   Future<void> fetchItems() async {
     emit(HomeLoading());
     try {
-      final snapshot = await _firestore.collection('items').get();
-      final items = snapshot.docs.map((doc) => {"id": doc.id, ...doc.data()}).toList();
+      // Retrieve userId from SharedPreferences
+      final prefs = await SharedPreferences.getInstance();
+      final userId = prefs.getString('user_id');
+
+      print('User ID: $userId');
+      if (userId == null) {
+        emit(HomeError("User ID not found"));
+        return;
+      }
+
+      // Fetch notes from Firestore
+      final snapshot = await _firestore
+          .collection('Notes')
+          .doc(userId)
+          .collection('subNotes')
+          .get();
+
+      if (snapshot.docs.isEmpty) {
+        emit(HomeLoaded([])); // No items found
+        return;
+      }
+
+      // Convert documents into a list of maps
+      final items = snapshot.docs.map((doc) {
+        return {
+          'id': doc.id,
+          ...doc.data(),
+        };
+      }).toList();
+
+      print('Fetched items: $items');
       emit(HomeLoaded(items));
     } catch (e) {
-      emit(HomeError("Failed to load items"));
+      print('Error fetching items: $e');
+      emit(HomeError("Failed to load items: ${e.toString()}"));
     }
   }
 
