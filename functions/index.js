@@ -1,61 +1,66 @@
-const express = require("express");
-const cors = require("cors");
-const admin = require("firebase-admin");
-const serviceAccount = require(
-    "./futurefortunetasks-firebase-adminsdk-fbsvc-664ef0a5a8.json",
-);
+import {initializeApp, applicationDefault } from 'firebase-admin/app';
+import { getMessaging } from "firebase-admin/messaging";
+import express, { json } from "express";
+import cors from "cors";
 
 
-// Initialize Express app
+process.env.GOOGLE_APPLICATION_CREDENTIALS;
+
 const app = express();
 app.use(express.json());
 
-// CORS Middleware
 app.use(
-    cors({
-      origin: "*",
-      methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
-    }),
+  cors({
+    origin: "*",
+  })
 );
 
+app.use(
+  cors({
+    methods: ["GET", "POST", "DELETE", "UPDATE", "PUT", "PATCH"],
+  })
+);
 
-// Initialize Firebase Admin SDK
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
+app.use(function(req, res, next) {
+  res.setHeader("Content-Type", "application/json");
+  next();
 });
 
-// API Endpoint to send FCM notification
-app.post("/send", async (req, res) => {
-  try {
-    const {fcmToken} = req.body;
 
-    if (!fcmToken) {
-      return res.status(400).json({error: "FCM token is required"});
-    }
+initializeApp({
+  credential: applicationDefault(),
+  projectId: 'potion-for-creators',
+});
 
-    const message = {
-      notification: {
-        title: "New Notification",
-        body: "This is a test notification from Firebase",
-      },
-      token: fcmToken,
-    };
-
-    const response = await admin.messaging().send(message);
-    console.log("Successfully sent message:", response);
-
-    res.status(200).json({
-      message: "Notification sent successfully",
-      token: fcmToken,
+app.post("/send", function (req, res) {
+  const receivedToken = req.body.fcmToken;
+  
+  const message = {
+    notification: {
+      title: "User Notification",
+      body: 'This is a Test Notification'
+    },
+    token: "cQ33EiijT2-t_SdLHXXE51:APA91bFulmy2O4YEAdxSzTIAvWl5dyzPYAe8FzJN91jxJKlpknjsI0OUMGRTuoqMG9EY_S6TMwjZ4QHtgKgJRUwU_GiqcOWIeQ9OKqHqsHDZi__jMGUkOlY",
+  };
+  
+  getMessaging()
+    .send(message)
+    .then((response) => {
+      res.status(200).json({
+        message: "Successfully sent message",
+        token: receivedToken,
+      });
+      console.log("Successfully sent message:", response);
+    })
+    .catch((error) => {
+      res.status(400);
+      res.send(error);
+      console.log("Error sending message:", error);
     });
-  } catch (error) {
-    console.error("Error sending message:", error);
-    res.status(500).json({error: error.message});
-  }
+  
+  
 });
 
-// Start Express server
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
+app.listen(3000, function () {
+  console.log("Server started on port 3000");
 });
