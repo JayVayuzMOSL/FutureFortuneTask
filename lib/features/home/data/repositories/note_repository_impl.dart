@@ -101,7 +101,7 @@ class NoteRepositoryImpl implements NoteRepository {
 
     try {
       await http.post(
-        Uri.parse('https://api.rnfirebase.io/messaging/send'),
+        Uri.parse('https://futurefortune-backend.onrender.com/send'),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
         },
