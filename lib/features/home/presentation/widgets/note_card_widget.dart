@@ -1,35 +1,34 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:future_fortune_task/core/constants/app_colors.dart';
+import 'package:future_fortune_task/features/home/data/models/note_model.dart';
 
 class NoteCard extends StatelessWidget {
-  final String imageUrl;
-  final String title;
+  final NoteModel notesModel;
 
-  const NoteCard({super.key, required this.imageUrl, required this.title});
+  const NoteCard({super.key, required this.notesModel});
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: EdgeInsets.only(bottom: 16.h),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(12.r),
-        child: Stack(
-          alignment: Alignment.bottomLeft,
+      child: Card(
+        child: Column(
           children: [
-            Image.network(imageUrl, width: double.infinity, height: 180.h, fit: BoxFit.cover),
             Container(
               width: double.infinity,
               padding: EdgeInsets.all(12.w),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [Colors.black.withOpacity(0.6), Colors.transparent],
-                  begin: Alignment.bottomCenter,
-                  end: Alignment.topCenter,
-                ),
-              ),
               child: Text(
-                title,
-                style: TextStyle(color: Colors.white, fontSize: 18.sp, fontWeight: FontWeight.bold),
+                notesModel.title,
+                style: TextStyle(color: AppColors.primaryTextColor, fontSize: 18.sp, fontWeight: FontWeight.bold),
+              ),
+            ),
+            Container(
+              width: double.infinity,
+              padding: EdgeInsets.all(12.w),
+              child: Text(
+                notesModel.note,
+                style: TextStyle(color: AppColors.primaryTextColor, fontSize: 18.sp, fontWeight: FontWeight.bold),
               ),
             ),
           ],

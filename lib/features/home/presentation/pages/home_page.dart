@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:future_fortune_task/features/home/presentation/bloc/home_cubit.dart';
+import 'package:future_fortune_task/config/routes/app_route_names.dart';
+import 'package:future_fortune_task/core/constants/app_strings.dart';
+import 'package:future_fortune_task/core/constants/app_colors.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:future_fortune_task/features/home/presentation/cubit/note_cubit.dart';
+import 'package:future_fortune_task/features/home/presentation/cubit/note_state.dart';
 import 'package:future_fortune_task/features/home/presentation/widgets/note_card_widget.dart';
 import 'package:future_fortune_task/features/home/presentation/widgets/search_bar_widget.dart';
-import 'package:get_it/get_it.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -14,22 +17,32 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  final TextEditingController _searchController = TextEditingController();
   @override
   void initState() {
     super.initState();
-    GetIt.I<HomeCubit>().fetchItems(); // Fetch items on page load
+    context.read<NoteCubit>().fetchNotes(); // Fetch items on page load
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Notes", style: TextStyle(fontSize: 22.sp, fontWeight: FontWeight.bold)),
+        title: Text(AppStrings.notes,
+            style: TextStyle(
+                fontSize: 22.sp, fontWeight: FontWeight.bold, color: AppColors.iconColor)),
         centerTitle: true,
+        backgroundColor: AppColors.primaryColor,
         actions: [
           IconButton(
-            icon: Icon(Icons.notifications, size: 24.sp),
+            icon: Icon(Icons.notifications, size: 24.sp, color: AppColors.iconColor),
             onPressed: () {},
+          ),
+          IconButton(
+            icon: Icon(Icons.logout, size: 24.sp, color: AppColors.iconColor),
+            onPressed: () {
+              context.read<NoteCubit>().logoutUser();
+            },
           ),
         ],
       ),
@@ -38,39 +51,55 @@ class _HomePageState extends State<HomePage> {
         child: Column(
           children: [
             SizedBox(height: 10.h),
-            const SearchBarWidget(),
+            SearchBarWidget(
+              searchController: _searchController,
+              onSearch: (query) {
+                context.read<NoteCubit>().searchNotes(query);
+              },
+            ),
             SizedBox(height: 20.h),
             Expanded(
-              child: BlocBuilder<HomeCubit, HomeState>(
-                bloc: GetIt.I<HomeCubit>(),
+              child: BlocConsumer<NoteCubit, NoteState>(
+                bloc: context.watch<NoteCubit>(),
                 builder: (context, state) {
-                  if (state is HomeLoading) {
+                  if (state is NoteLoading) {
                     return const Center(child: CircularProgressIndicator());
-                  } else if (state is HomeLoaded) {
+                  } else if (state is NoteLoaded) {
+                    if (state.notes.isEmpty) {
+                      return const Center(child: Text(AppStrings.noNotesAvailable));
+                    }
                     return ListView.builder(
-                      itemCount: state.items.length,
+                      itemCount: state.notes.length,
                       itemBuilder: (context, index) {
-                        final item = state.items[index];
+                        final item = state.notes[index];
 
                         return Visibility(
-                          visible: item.isNotEmpty,
+                          visible: item.title.isNotEmpty,
                           child: GestureDetector(
                             onTap: () {
-                              Navigator.pushNamed(context, '/editItem');
+                              Navigator.pushNamed(context, AppRouteNames.editItemRoute,
+                                  arguments: item);
                             },
                             child: NoteCard(
-                              imageUrl: item["imageurl"]?.toString() ?? '', // Safe handling
-                              title: item["title"]?.toString() ?? 'No Title',
+                              notesModel: item,
                             ),
                           ),
                         );
                       },
                     );
-                  } else if (state is HomeError) {
-                    return Center(child: Text(state.message));
+                  } else if (state is NoteFailure) {
+                    return Center(child: Text(state.error));
                   }
-                  return const Center(child: Text("No notes available"));
-                },
+                  return const Center(child: Text(AppStrings.noNotesAvailable));
+                }, listener: (BuildContext context, NoteState state) {
+                  if(state is NoteLogoutSuccess){
+                    Navigator.pushNamedAndRemoveUntil(
+                      context,
+                      AppRouteNames.loginRoute, // Ensure this route is correctly defined
+                          (route) => false, // Removes all previous routes
+                    );
+                  }
+              },
               ),
             ),
           ],
@@ -78,10 +107,10 @@ class _HomePageState extends State<HomePage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Navigator.pushNamed(context, '/addItem');
-        }, // Add note functionality
-        backgroundColor: Colors.blue,
-        child: Icon(Icons.add, size: 28.sp, color: Colors.white),
+          Navigator.pushNamed(context, AppRouteNames.addItemRoute);
+        },
+        backgroundColor: AppColors.fabColor,
+        child: Icon(Icons.add, size: 28.sp, color: AppColors.iconColor),
       ),
     );
   }

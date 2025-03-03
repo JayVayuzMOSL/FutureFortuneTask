@@ -1,6 +1,5 @@
-part of 'auth_bloc.dart';
+part of 'auth_cubit.dart';
 
-// Authentication State
 abstract class AuthState extends Equatable {
   @override
   List<Object?> get props => [];
@@ -11,7 +10,7 @@ class AuthInitial extends AuthState {}
 class AuthLoading extends AuthState {}
 
 class AuthAuthenticated extends AuthState {
-  final User user;
+  final UserModel user;
   AuthAuthenticated(this.user);
 
   @override

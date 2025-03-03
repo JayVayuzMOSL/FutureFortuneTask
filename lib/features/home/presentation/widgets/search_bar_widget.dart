@@ -1,8 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:future_fortune_task/core/constants/app_strings.dart';
+
+import '../../../../core/constants/app_colors.dart';
 
 class SearchBarWidget extends StatelessWidget {
-  const SearchBarWidget({super.key});
+  final TextEditingController searchController;
+  final ValueChanged<String> onSearch;
+
+  const SearchBarWidget({
+    super.key,
+    required this.searchController,
+    required this.onSearch,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -15,12 +25,14 @@ class SearchBarWidget extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Icon(Icons.search, color: Colors.grey, size: 22.sp),
+          Icon(Icons.search, color: AppColors.grey, size: 22.sp),
           SizedBox(width: 10.w),
           Expanded(
             child: TextField(
+              controller: searchController,
+              onChanged: onSearch, // Calls parent function when text changes
               decoration: InputDecoration(
-                hintText: "Search notes",
+                hintText: AppStrings.searchNotes,
                 border: InputBorder.none,
               ),
             ),
