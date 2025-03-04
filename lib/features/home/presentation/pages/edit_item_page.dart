@@ -155,6 +155,5 @@ class _EditTaskPageState extends State<EditTaskPage> {
         priority: selectedPriority ?? widget.noteModel.priority,
       ),
     );
-    Navigator.of(context).pushReplacementNamed(AppRouteNames.homeRoute);
   }
 }

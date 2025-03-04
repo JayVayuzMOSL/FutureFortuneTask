@@ -101,7 +101,7 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   SizedBox(height: 25.h),
                   state is AuthLoading
-                      ? const CircularProgressIndicator()
+                      ? Center(child: const CircularProgressIndicator())
                       : CustomButton(text: AppStrings.login, onPressed: _login),
                   SizedBox(height: 15.h),
                   Center(

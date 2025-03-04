@@ -102,7 +102,7 @@ class SignUpPage extends StatelessWidget {
                   ),
                   SizedBox(height: 25.h),
                   state is AuthLoading
-                      ? const CircularProgressIndicator()
+                      ? Center(child: const CircularProgressIndicator())
                       : CustomButton(
                     text: AppStrings.signUp,
                     onPressed: () => _signUp(context),
